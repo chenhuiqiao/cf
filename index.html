@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>加法游戏</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+
+    }
+
+    .title {
+        color: red;
+        font-size: 36px; /* 增大字体大小 */
+        position: absolute;
+        top: 36px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .container {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr)); /* 更改为 minmax(0, 1fr) */
+        gap: 15px;
+        margin-top: 50px;
+        width: 400px; /* 更改为 400px */
+    }
+
+    .score-time {
+        position: absolute;
+        top: 100px;
+        left: 80%;
+        transform: translateX(-50%);
+    }
+
+    .question {
+        display: flex;
+        flex-direction: column; /* 修改为 column */
+        align-items: flex-start; /* 使文本靠左对齐 */
+        width: 250px;
+        font-size: 24px;
+    }
+
+    .number {
+
+    }
+
+    .deep-orange {
+        color: #FF5722;
+    }
+
+    .green {
+        color: #4CAF50;
+    }
+
+    .red {
+        color: #F44336;
+    }
+
+    .option {
+        font-size: 18px; /* 增大字体大小 */
+
+        border: 1px solid #CCCCCC; /* 添加边框 */
+        padding: 5px 10px; /* 增加内边距 */
+        border-radius: 5px; /* 添加圆角 */
+        cursor: pointer; /* 添加鼠标手型 */
+        margin-right: 5px; /* 增加间距 */
+    }
+
+    .option:hover {
+        background-color: #E0E0E0; /* 添加悬停效果 */
+    }
+
+    .selected {
+        cursor: default; /* 取消鼠标手型 */
+    }
+</style>
+
+</head>
+<body>
+    <!--<div class="title">20 Addition Questions</div>-->
+<div class="container" id="gameContainer"></div>
+
+    <script>
+        function shuffle(array) {
+            let currentIndex = array.length, temporaryValue, randomIndex;
+while (0 !== currentIndex) {
+randomIndex = Math.floor(Math.random() * currentIndex);
+currentIndex -= 1;
+temporaryValue = array[currentIndex];
+array[currentIndex] = array[randomIndex];
+array[randomIndex] = temporaryValue;
+}
+return array;
+}
+
+    const questions = [];
+    for (let i = 0; i <= 9; i++) {
+        for (let j = 0; j <= 9; j++) {
+            questions.push({ a: i, b: j, answer: i + j });
+        }
+    }
+
+    shuffle(questions);
+    const selectedQuestions = questions.slice(0, 20);
+    const startTime = new Date();
+
+    let score = 0;
+    let completedQuestions = 0;
+
+    selectedQuestions.forEach((q, idx) => {
+        const correctAnswer = q.answer;
+        const wrongAnswer1 = (q.answer + 1) % 19;
+        const wrongAnswer2 = (q.answer + 2) % 19;
+        const answerOptions = [correctAnswer, wrongAnswer1, wrongAnswer2];
+        shuffle(answerOptions);
+
+        const questionDiv = document.createElement('div');
+        questionDiv.classList.add('question');
+
+
+
+        questionDiv.innerHTML = `
+            <span class="number">(${idx + 1}) ${q.a} + ${q.b} = <span class="deep-orange">?</span></span> <!-- 将序号和题目放在同一行 -->
+            <div class="options-container"> <!-- 添加 options-container div -->
+                <button class="option">${answerOptions[0]}</button>
+                <button class="option">${answerOptions[1]}</button>
+                <button class="option">${answerOptions[2]}</button>
+            </div>
+        `;
+
+
+        const options = questionDiv.querySelectorAll('.option');
+
+        options.forEach(option => {
+            option.onclick = () => {
+                if (option.classList.contains('selected')) return;
+
+                option.classList.add('selected');
+
+                if (parseInt(option.textContent) === q.answer) {
+                    score += 5;
+                    option.classList.add('green');
+                } else {
+                    option.classList.add('red');
+                }
+
+                completedQuestions++;
+
+                if (completedQuestions === 20) {
+                    const endTime = new Date();
+                    const timeTaken = Math.floor((endTime - startTime) / 1000);
+                    const resultDiv = document.createElement('div');
+                    resultDiv.classList.add('score-time');
+
+                    resultDiv.innerHTML = `
+                        <p>你的成绩：${score}/100</p>
+                        <p>所用时间：${timeTaken}秒</p>
+                    `;
+                    questionDiv.appendChild(resultDiv);
+                }
+
+                options.forEach(opt => {
+                    opt.disabled = true;
+                });
+            };
+        });
+
+        document.getElementById('gameContainer').appendChild(questionDiv);
+    });
+</script>
+
+</body>
+</html>
