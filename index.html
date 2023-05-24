@@ -93,11 +93,16 @@
         }
     
         // 绑定按钮的点击事件
-        prevBtn.addEventListener("click", showPreviousImage);
-        nextBtn.addEventListener("click", showNextImage);
-    
+        //prevBtn.addEventListener("click", showPreviousImage);
+        //nextBtn.addEventListener("click", showNextImage);
+        
+        // 显示放大图片
+    function showZoomedImage() {
+        overlay.style.display = "flex";
+        zoomedImage.src = imageElement
+        }
         // 显示初始图片
-        showImage(currentIndex);
+        //showImage(currentIndex);
     </script>
     
 </body>
