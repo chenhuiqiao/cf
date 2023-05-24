@@ -63,6 +63,7 @@
         <img id="zoomed-image" src="" alt="Zoomed Image">
     </div>
     <script src="path/to/your/javascript/file.js"></script>
+    <script src="path/to/lib/heic2any.js"></script>
     <script>
         var images = ["https://github.com/chenhuiqiao/cf/blob/main/1.jpeg?raw=true", 
                       "https://github.com/chenhuiqiao/cf/blob/main/2.jpeg?raw=true",
@@ -75,35 +76,49 @@
         var overlay = document.getElementById("overlay");
         var zoomedImage = document.getElementById("zoomed-image");
     
-        // 显示当前索引对应的图片
-        function showImage(index) {
-            imageElement.src = images[index];
+            // 显示当前索引对应的图片
+    function showImage(index) {
+        var imagePath = images[index];
+        if (imagePath.endsWith(".heic")) {
+            convertHeicToJpeg(imagePath).then(function (jpegData) {
+                imageElement.src = jpegData;
+            });
+        } else {
+            imageElement.src = imagePath;
         }
-    
-        // 显示上一张图片
-        function showPreviousImage() {
-            currentIndex = (currentIndex - 1 + images.length) % images.length;
-            showImage(currentIndex);
-        }
-    
-        // 显示下一张图片
-        function showNextImage() {
-            currentIndex = (currentIndex + 1) % images.length;
-            showImage(currentIndex);
-        }
-    
-        // 绑定按钮的点击事件
-        //prevBtn.addEventListener("click", showPreviousImage);
-        //nextBtn.addEventListener("click", showNextImage);
-        
-        // 显示放大图片
+    }
+
+    // 显示上一张图片
+    function showPreviousImage() {
+        currentIndex = (currentIndex - 1 + images.length) % images.length;
+        showImage(currentIndex);
+    }
+
+    // 显示下一张图片
+    function showNextImage() {
+        currentIndex = (currentIndex + 1) % images.length;
+        showImage(currentIndex);
+    }
+
+    // 显示放大图片
     function showZoomedImage() {
         overlay.style.display = "flex";
-        zoomedImage.src = imageElement
-        }
-        // 显示初始图片
-        showImage(currentIndex);
-    </script>
-    
+        zoomedImage.src = imageElement.src;
+    }
+
+    // 关闭放大图片
+    function closeZoomedImage() {
+        overlay.style.display = "none";
+        zoomedImage.src = "";
+    }
+
+    // 绑定按钮的点击事件
+    prevBtn.addEventListener("click", showPreviousImage);
+    nextBtn.addEventListener("click", showNextImage);
+    imageElement.addEventListener("click", showZoomedImage);
+    overlay.addEventListener("click", closeZoomedImage);
+
+    // 显示初始图片
+    showImage(currentIndex);
 </body>
 </html>
